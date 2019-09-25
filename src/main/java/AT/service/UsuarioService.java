@@ -11,29 +11,29 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class UsuarioService {
     @Autowired
-    private UsuarioRepositorio repoUsuario;
+    private UsuarioRepositorio repo;
     
     public List<Usuario> listAll(){
-        return repoUsuario.findAll();
+        return repo.findAll();
     }
     
     public void save(Usuario usuario){
-        repoUsuario.save(usuario);
+        repo.save(usuario);
     }
     
     public Usuario get(Long id){
-        return repoUsuario.findById(id).get();
+        return repo.findById(id).get();
     }
         
     public void delete(Long id){
-        repoUsuario.deleteById(id);  
+        repo.deleteById(id);  
     }
     
     public List<Usuario> login(String email, String senha){
-        return repoUsuario.login(email, senha);
+        return repo.login(email, senha);
     }
     
-    public void alterarUsuario(String nome, String email, Long id){
-        repoUsuario.alterar(nome, email, id);
+    public void alterar(String nome, String email, Long id){
+        repo.alterar(nome, email, id);
     }
 }

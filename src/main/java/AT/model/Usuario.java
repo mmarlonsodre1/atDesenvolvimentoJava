@@ -6,20 +6,18 @@
 package AT.model;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- *
- * @author marlon
- */
 @Entity
 @Table(name = "usuario")
 public class Usuario implements Serializable {
     private Long id;
+    private Long perfil_id;
     private int matricula;
     private String senha;
     private String nome;
@@ -28,8 +26,9 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
-    public Usuario(Long id, int matricula, String senha, String nome, String email) {
+    public Usuario(Long id, Long perfil_id, int matricula, String senha, String nome, String email) {
         this.id = id;
+        this.perfil_id = perfil_id;
         this.matricula = matricula;
         this.senha = senha;
         this.nome = nome;
@@ -46,6 +45,16 @@ public class Usuario implements Serializable {
         this.id = id;
     }
 
+    @Column(nullable = true)
+    public Long getPerfil_id() {
+        return perfil_id;
+    }
+
+    public void setPerfil_id(Long perfil_id) {
+        this.perfil_id = perfil_id;
+    }
+
+    @Column(nullable = true)
     public int getMatricula() {
         return matricula;
     }
@@ -54,6 +63,7 @@ public class Usuario implements Serializable {
         this.matricula = matricula;
     }
 
+    @Column(nullable = true)
     public String getSenha() {
         return senha;
     }
@@ -62,6 +72,7 @@ public class Usuario implements Serializable {
         this.senha = senha;
     }
 
+    @Column(nullable = true)
     public String getNome() {
         return nome;
     }
@@ -70,13 +81,12 @@ public class Usuario implements Serializable {
         this.nome = nome;
     }
 
+    @Column(nullable = true)
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-    
-    
+    }  
 }

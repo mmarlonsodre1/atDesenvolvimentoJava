@@ -71,6 +71,14 @@
                                 <div class="form-group">
                                     <form:input class="form-control" placeholder="Senha" path="senha" type="password"/>
                                 </div>
+                                <div class="form-group col-xs-2 col-lg-2">
+                                                <form:label class="control-label" path="perfil_id">Perfil</form:label>
+                                                <form:select path="perfil_id" id="perfil_id" class="form-control">
+                                                   <c:forEach items="${listPerfil}" var="perfil">        
+                                                        <form:option value="${perfil.id}">${perfil.nome}</form:option>
+                                                    </c:forEach>                                                
+                                                </form:select>
+                                            </div>
                                 <!-- Change this to a button or input when using this as a form -->
                                 <input type="submit" class="btn btn-lg btn-info btn-block" placeholder="Realizar Cadastro">
                             </fieldset>
