@@ -18,8 +18,7 @@ public class Professor implements Serializable {
     public Professor() {
     }
 
-    public Professor(Long id, String titulacao, Long usuario_id) {
-        this.id = id;
+    public Professor(String titulacao, Long usuario_id) {
         this.titulacao = titulacao;
         this.usuario_id = usuario_id;
     }

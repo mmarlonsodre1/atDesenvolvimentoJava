@@ -19,8 +19,7 @@ public class Aluno implements Serializable {
     public Aluno() {
     }
 
-    public Aluno(Long id, Long usuario_id, Long curso_id, String datanasc) {
-        this.id = id;
+    public Aluno(Long usuario_id, Long curso_id, String datanasc) {
         this.usuario_id = usuario_id;
         this.curso_id = curso_id;
         this.datanasc = datanasc;

@@ -18,13 +18,18 @@ import AT.service.UsuarioService;
 import java.text.ParseException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
  
 @RestController
@@ -53,9 +58,10 @@ public class AppController {
         Usuario usuario = new Usuario();
         mav.addObject("usuario", usuario);
         mav.addObject("listPerfil", servicePerfil.listAll());
+        mav.addObject("listCursos", serviceCurso.listAll());
         return mav;
     }
-    
+      
     
     // TODO: API GET
     @RequestMapping(value = "/api/verUsuarios")
@@ -63,112 +69,130 @@ public class AppController {
         return serviceUsuario.listAll();
     } 
     
-    @RequestMapping(value = "/api/verAlunos")
-    public List<Aluno> verAlunos() {
-        return serviceAluno.listAll();
-    } 
-    
     @RequestMapping(value = "/api/verCursos")
     public List<Curso> verCursos() {
         return serviceCurso.listAll();
     } 
     
-    @RequestMapping(value = "/api/verDisciplinas")
-    public List<Disciplina> verDisciplinas() {
-        return serviceDisciplina.listAll();
-    } 
+        @RequestMapping("/api/verUsuariosApi")
+    public ModelAndView verApiUsuarios(){
+        ModelAndView mav = new ModelAndView("tabela_usuarios");
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<List<Usuario>> response = restTemplate.exchange(
+          "http://localhost:8080/api/verUsuarios/",
+          HttpMethod.GET,
+          null,
+          new ParameterizedTypeReference<List<Usuario>>(){});
+        List<Usuario> usuarios = response.getBody();
+        mav.addObject("listUsuarios", usuarios);
+        return mav;
+    }
     
-    @RequestMapping(value = "/api/verNotas")
-    public List<Nota> verNotas() {
-        return serviceNota.listAll();
-    } 
+    @RequestMapping("/api/verCursosApi")
+    public ModelAndView verApiCursos(){
+        ModelAndView mav = new ModelAndView("tabela_cursos");
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<List<Curso>> response = restTemplate.exchange(
+          "http://localhost:8080/api/verCursos/",
+          HttpMethod.GET,
+          null,
+          new ParameterizedTypeReference<List<Curso>>(){});
+        List<Curso> cursos = response.getBody();
+        mav.addObject("listCursos", cursos);
+        return mav;
+    }
     
-    @RequestMapping(value = "/api/verPerfis")
-    public List<Perfil> verPerfis() {
-        return servicePerfil.listAll();
-    } 
+    @RequestMapping(value = "disciplina", method = RequestMethod.GET)
+    public ModelAndView disciplina(){
+        ModelAndView mav = new ModelAndView("disciplina");
+        mav.addObject("listCursos", serviceCurso.listAll());
+        mav.addObject("disciplina", new Disciplina());
+        return mav;
+    }
     
-    @RequestMapping(value = "/api/verProfessores")
-    public List<Professor> verProfessores() {
-        return serviceProfessor.listAll();
-    } 
-    
-    @RequestMapping(value = "/api/verTurmas")
-    public List<Turma> verTurmas() {
-        return serviceTurma.listAll();
-    } 
-    
+    @RequestMapping(value = "api/novaDisciplinaApi", method = RequestMethod.POST)
+    public ModelAndView novaDisciplinaApi(@ModelAttribute("disciplina") Disciplina disciplina){
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            restTemplate.postForObject("http://localhost:8080/api/novaDisciplina", disciplina, ResponseEntity.class);
+        } catch(Exception e){}
+        return new ModelAndView("redirect:/home");
+    }
     
     // TODO: API POST
-    @RequestMapping(value = "/api/novoCurso", method = RequestMethod.POST)
-    public String novoCurso(@RequestBody Curso curso) {
+    @RequestMapping(value = "/api/novaDisciplina", method = RequestMethod.POST)
+    public Disciplina novaDisciplina(@RequestBody Disciplina disciplina) {
         try{
-            serviceCurso.save(curso);
-            return "Curso Salvo";
+            serviceDisciplina.save(disciplina);
+            return disciplina;
         } catch (Exception e){
-            return "Erro ao salvar Curso";
+            disciplina.setNome("ERROR");
+            disciplina.setCodigo("ERROR");
+            return disciplina;
         }
-    } 
-   
-//    
-//    // TODO: EDITAR
-//    @RequestMapping("/editarMorador/{id}")
-//    public ModelAndView verEdicaoMorador(@PathVariable(name = "id") Long id) {
-//        ModelAndView mav = new ModelAndView("moradores_editar");
-//       // Morador morador = serviceUsuario.get(id);
-//        //mav.addObject("morador", morador);
-//        return mav;
-//    }
+    }
+    
+    // TODO: EDITAR
+    @RequestMapping(value="/editarUsuario/{id}", method = RequestMethod.GET)
+    public ModelAndView verEdicaoUsuario(@PathVariable(name = "id") Long id, Model model) {
+        ModelAndView mav = new ModelAndView("editar_usuario");
+        model.addAttribute("usuario", serviceUsuario.get(id));
+        return mav;
+    }
     
     
-        // TODO: SALVAR Edicao
-//    @RequestMapping(value = "/salvarEdicaoMorador", method = RequestMethod.POST)
-//    public ModelAndView salvarEdicaoMorador(@ModelAttribute("morador") Usuario morador) {
-//        ModelAndView mav = new ModelAndView("redirect:/moradores");
-//        serviceUsuario.alterarMorador(morador.getNome(), morador.getCpf(), morador.getRg(), 
-//                morador.getDt_nascimento(), morador.getEmail(), morador.getTelefone(), 
-//                morador.getId_unidade(), morador.getId());
-//        return mav;
-//    }
-//    
-//    // TODO: DELETAR
-//    @RequestMapping("/deletarMorador/{id}")
-//    public ModelAndView deletarMorador(@PathVariable(name = "id") Long id) {
-//        ModelAndView mav = new ModelAndView("redirect:/moradores");
-//        serviceUsuario.delete(id);
-//        return mav;       
-//    }
+    //TODO: SALVAR Edicao
+    @RequestMapping(value = "/salvarEdicaoUsuario", method = RequestMethod.POST)
+    public ModelAndView salvarEdicaoUsuario(@ModelAttribute("usuario") Usuario usuario) {
+        ModelAndView mav = new ModelAndView("redirect:/api/verUsuariosApi");
+        serviceUsuario.alterar(usuario.getNome(), usuario.getEmail(), usuario.getId());
+        return mav;
+    }
+    
+    
+    // TODO: DELETAR
+    @RequestMapping("/deletarCurso/{id}")
+    public ModelAndView deletarCurso(@PathVariable(name = "id") Long id) {
+        ModelAndView mav = new ModelAndView("redirect:/api/verCursosApi");
+        try{
+            serviceCurso.delete(id);
+        } catch (Exception e){
+            mav = new ModelAndView("error_deletar");
+        }
+        return mav;       
+    }
     
     
     // TODO: LOGIN
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ModelAndView login(@RequestParam(name = "email") String email, @RequestParam(name = "senha") String senha){
         List<Usuario> listUsuario = serviceUsuario.login(email, senha);
-        return (listUsuario.size() > 0)? new ModelAndView("redirect:/moradores") : new ModelAndView("redirect:/");   
+        return (listUsuario.size() > 0)? new ModelAndView("redirect:/home") : new ModelAndView("redirect:/");   
+    }
+    
+    @RequestMapping("/home")
+    public ModelAndView home(){
+        return new ModelAndView("home");   
     }
     
      // TODO: CADASTRO
     @RequestMapping(value = "/cadastro", method = RequestMethod.POST)
-    public ModelAndView salvarMorador(@ModelAttribute("usuario") Usuario usuario) throws ParseException {
-        ModelAndView mav = new ModelAndView("redirect:/");
+    public ModelAndView salvarMorador(@ModelAttribute("usuario") Usuario usuario, @RequestParam(name="datanasc")String datanasc,
+            @RequestParam("titulacao")String titulacao, @RequestParam String curso_id){
         serviceUsuario.save(usuario);
+        ModelAndView mav = new ModelAndView("redirect:/homeCadastro/" + String.valueOf(usuario.getId()));
+        if (!titulacao.isEmpty()) serviceProfessor.save(new Professor(titulacao, usuario.getId()));
+        if (!datanasc.isEmpty()) serviceAluno.save(new Aluno(usuario.getId(), Long.parseLong(curso_id), datanasc));
+        mav.addObject("dados", usuario);
         return mav;
     }
     
-    
-//    // TODO: LOGOUT
-//    @RequestMapping("/logout")
-//    public ModelAndView logout(Model model){
-//        ModelAndView mav = new ModelAndView("index");
-//        return mav;   
-//    }
-//    
-//    
-//    // TODO: LISTAR
-//    @RequestMapping("/moradores")
-//    public ModelAndView verMorador(Model model){
-//        ModelAndView mav = new ModelAndView("moradores");
-//       // model.addAttribute("listMorador", serviceUsuario.listAll());
-//        return mav;
-//    }
+    @RequestMapping("/homeCadastro/{id}")
+    public ModelAndView homeCadastro(@PathVariable(name = "id") Long id){
+        ModelAndView mav = new ModelAndView("home_cadastro");
+        Usuario usuario = serviceUsuario.get(id);
+        mav.addObject(usuario);
+        return mav;
+    }
+
 }
