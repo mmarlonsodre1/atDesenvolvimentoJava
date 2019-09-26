@@ -74,7 +74,7 @@
                                     <input class="form-control" id="datanasc_var" placeholder="Dt Nascimento" name="datanasc"/>
                                 </div>
                                 <div class="form-group" id="curso" style="display: none">
-                                    <label class="control-label" name="curso_id">Perfil</label>
+                                    <label class="control-label" name="curso_id">Curso</label>
                                     <select name="curso_id" class="form-control">
                                        <c:forEach items="${listCursos}" var="curso">        
                                             <option value="${curso.id}">${curso.nome}</option>
